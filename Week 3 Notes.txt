@@ -1,0 +1,126 @@
+# Week 3 Notes
+
+#at work
+setwd("C:/Users/JohnsonCM/Documents/Cara Files/Coursera Class 4")
+#home
+setwd("C:/Users/Cara/Documents/Coursera Data Science/Class 4 - Exploratory Data Analysis")
+
+
+#Heirarchical Clustering - Example
+
+set.seed(1234)
+par(mar=c(0,0,0,0))
+x <- rnorm(12,mean=rep(1:3,each=4),sd=0.2)
+y <- rnorm(12,mean=rep(c(1,2,1),each=4),sd=0.2)
+plot(x,y,col="blue",pch=19,cex=2)
+text(x+0.05,y+0.05,labels=as.character(1:12))
+
+#clear plot settings
+dev.off()
+
+dataFrame <- data.frame(x=x,y=y)
+distxy <- dist(dataFrame)
+hClustering <- hclust(distxy)
+
+plot(hClustering)
+
+
+## Prettier dendograms with custom function (saved r script)
+source("myplclust.R")
+
+dev.off()
+dataFrame <- data.frame(x=x,y=y)
+distxy <- dist(dataFrame)
+hClustering <- hclust(distxy)
+myplclust(hClustering,lab=rep(1:3,each=4),lab.col=rep(1:3,each=4))
+
+
+#Heatmap
+dataFrame <- data.frame(x=x,y=y)
+set.seed(143)
+dataMatrix <- as.matrix(dataFrame)[sample(1:12),]
+heatmap(dataMatrix)
+
+
+# kmeans()
+kmeansObj <- kmeans(dataFrame,centers=3)
+names(kmeansObj)
+kmeansObj$cluster
+kmeansObj$centers
+
+#plot results
+par9mar=rep(0.2,4))
+plot(x,y,col=kmeansObj$cluster,pch=19,cex=2)
+points(kmeansObj$centers,col=1:3,pch=3,cex=3,lwd=3)
+
+#heatmaps
+set.seed(1234)
+dataMatrix <- as.matrix(dataFrame)[sample(1:12),]
+kmeansObj2 <- kmeans(dataMatrix, centers=3)
+par(mfrow=c(1,2),mar=c(2,4,0.1,0.1))
+
+#plot original data
+image(t(dataMatrix)[,nrow(dataMatrix):1],yaxt="n")
+#plot data with rows re-ordered by cluster
+image(t(dataMatrix)[,order(kmeansObj$cluster)],yaxt="n")
+
+###
+### Dimension Reduction
+#Ex. matrix data -noisy
+set.seed(1234)
+par(mar=rep(0.2,4))
+dataMatrix <- matrix(rnorm(400),nrow=40)
+image(1:10,1:40,t(dataMatrix)[,nrow(dataMatrix):1])
+
+#heirarchical clustering
+par(mar=rep(0.2,4))
+heatmap(dataMatrix)
+
+
+#Ex. data with pattern
+set.seed(678910)
+for (i in 1:40) {
+	coinflip <- rbinom(1,size=1,prob=0.5)
+	if (coinflip) {
+		dataMatrix[i,] <- dataMatrix[i,]+rep(c(0,3),each=5)
+	}
+}
+
+#plot
+par(mar=rep(0.2,4))
+image(1:10,1:40,t(dataMatrix)[,nrow(dataMatrix):1])
+heatmap(dataMatrix)
+
+#look at rowMeans and colMeans
+hh <- hclust(dist(dataMatrix))
+dataMatrixOrdered <- dataMatrix[hh$order,]
+par(mfrow=c(1,3))
+image(t(dataMatrixOrdered)[,nrow(dataMatrixOrdered):1])
+plot(rowMeans(dataMatrixOrdered),40:1,xlab="Row Mean",ylab="Row",pch=19)
+plot(colMeans(dataMatrixOrdered),xlab="Column",ylab="Column Mean",pch=19)
+
+### SVD - components u and v
+svd1 <- svd(scale(dataMatrixOrdered))
+names(svd1)
+
+#plot u and v
+par(mfrow=c(1,3))
+image(t(dataMatrixOrdered)[,nrow(dataMatrixOrdered):1])
+plot(svd1$u[,1],40:1, ,xlab="Row",ylab="First left singular vector",pch=19)
+plot(svd1$v[,1],xlab="Column",ylab="First right singular vector",pch=19)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,132 @@
+# Week 2 Notes
+
+setwd("C:/Users/JohnsonCM/Documents/Cara Files/Coursera Class 4")
+
+# Lattice Plotting System Examples
+
+library(lattice)
+library(datasets)
+
+xyplot(Ozone ~ Wind, data=airquality)
+
+airquality <- transform(airquality, Month=factor(Month))
+xyplot(Ozone~Wind | Month, data=airquality)
+
+#save vs autoprinting behavior
+p <- xyplot(Ozone ~ Wind, data=airquality)
+pring(p)
+
+#autoprints
+xyplot(Ozone ~ Wind, data=airquality)
+
+
+# Ex. 1
+set.seed(10)
+x <- rnorm(100)
+f <- rep(0:1,each=50)
+y <- x+f-f*x+rnorm(100,sd=0.5)
+f <- factor(f,labels=c("Group 1","Group 2"))
+xyplot(y ~ x | f, layout=c(2,1))
+
+# Ex. 2
+#custom panel function
+xyplot(y ~ x | f, panel=function(x,y,...) {
+	panel.xyplot(x,y,...)
+	panel.abline(h=median(y),lty=2)
+})
+
+
+# Ex. 3
+#custom panel function - Regression Line
+xyplot(y ~ x | f, panel=function(x,y,...) {
+	panel.xyplot(x,y,...)
+	panel.lmline(x,y,col=2)
+})
+
+
+
+## ggplot2 Plotting System
+
+#Example dataset
+install.packages("ggplot2")
+library(ggplot2)
+str(mpg)
+
+qplot(displ,hwy,data=mpg)
+
+#use factor variable to color-code
+qplot(displ,hwy,data=mpg, color=drv)
+
+#add geom (smooth fit line)
+qplot(displ,hwy,data=mpg, geom=c("point","smooth"))
+
+#histogram
+qplot(hwy,data=mpg,fill=drv)
+
+## Use facets to determine subplots (like panels in lattice)
+#1x3 panels
+qplot(displ,hwy,data=mpg,facets=.~drv)
+
+#3x1 panels
+qplot(hwy,data=mpg,facets=drv~.)
+
+## Density Smooth geom
+#example data - not available
+qplot(log(eno),data=maacs, geom="density")
+
+#separate and color density smooth geoms out by factor variable
+qplot(log(eno),data=maacs, geom="density",color=mopos)
+
+
+# ggplot() function
+g <- ggplot(mpg, aes(displ,hwy))
+g + geom_point()
+#to autoprint plot
+
+#or 
+p <- g + geom_point()
+print(p)
+
+summary(g)
+
+#add layer - Smooth
+g + geom_point() + geom_smooth()
+
+g + geom_point() + geom_smooth(method="lm")
+
+#add layer - facets
+g + geom_point() + facet_grid(.~drv) + geom_smooth(method="lm")
+
+#modify data points
+g + geom_point(color="steelblue",size=4,alpha=1/2)
+
+#use aes() to color-code by factor variable
+g + geom_point(aes(color=drv),size=4,alpha=1/2)
+
+#modifying labels
+g + geom_point(aes(color=drv)) + labs(title="Car Information") + labs(x="Displacement",y="Highway miles/gallon")
+
+#modifying the smooth
+g + geom_point(aes(color=drv),size=2,alpha=1/2) + geom_smooth(size=4,linetype=3,method="lm",se=FALSE)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
